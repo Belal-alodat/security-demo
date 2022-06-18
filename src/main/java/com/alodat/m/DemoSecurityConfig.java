@@ -3,6 +3,7 @@ package com.alodat.m;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,9 +21,15 @@ public class DemoSecurityConfig {
 	
 	@Bean
 	public SecurityFilterChain getFilter(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/login").permitAll();
-		http.authorizeRequests().antMatchers("/**").hasRole("USER2");
-		http.httpBasic();
+		http.cors().and().csrf().disable();
+		http.authorizeRequests().antMatchers("/login","/users/authenticate", "/users/register").permitAll();
+		http.authorizeRequests().antMatchers("/user1").hasRole("USER2");
+		http.authorizeRequests().antMatchers("/user2").hasRole("USER3");
+		http.authorizeRequests().anyRequest().authenticated();
+		//http.sessionManagement().sessionCreationPolicy();
+		//http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+		http.formLogin();
 		 
 		
 		return http.build();
